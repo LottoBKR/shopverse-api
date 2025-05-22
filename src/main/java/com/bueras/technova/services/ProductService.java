@@ -1,14 +1,16 @@
 package com.bueras.technova.services;
 
 import com.bueras.technova.models.Product;
+import com.bueras.technova.models.dto.ProductDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-    List<Product> getAllProducts();
-    Optional<Product> getProductById(Long id);
-    Product createProduct(Product product);
-    Product updateProduct(Long id, Product product);
+    List<ProductDTO> getAllProducts();
+    ProductDTO getProductById(Long id);
+    ProductDTO createProduct(Product product);
+    ProductDTO updateProduct(Long id, Product product);
+    List<ProductDTO> getByCategoryId(Long categoryId);
     void deleteProduct(Long id);
 }

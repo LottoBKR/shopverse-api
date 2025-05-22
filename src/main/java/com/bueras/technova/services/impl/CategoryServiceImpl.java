@@ -1,6 +1,8 @@
 package com.bueras.technova.services.impl;
 
 import com.bueras.technova.models.Category;
+import com.bueras.technova.models.Product;
+import com.bueras.technova.models.dto.CategoryDTO;
 import com.bueras.technova.repositories.CategoryRepository;
 import com.bueras.technova.services.CategoryService;
 import com.bueras.technova.services.ProductService;
@@ -16,8 +18,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public List<Category> getAllCategories(){
-        return categoryRepository.findAll();
+    public List<CategoryDTO> getAllCategories(){
+        return categoryRepository.findAll().stream().map(this::toDto).toList();
     }
 
     public Optional<Category> getCategoryById(Long id) {
@@ -47,5 +49,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    public CategoryDTO getCategoryDTOById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+        return new CategoryDTO(
+                category.getId(),
+                category.getName(),
+                category.getDescription(),
+                category.getProducts()
+        );
+    }
+
+    private CategoryDTO toDto(Category category){
+        return new CategoryDTO(category.getId(), category.getName(), category.getDescription(), category.getProducts());
     }
 }

@@ -1,7 +1,9 @@
 package com.bueras.technova.controllers;
 
 import com.bueras.technova.models.Product;
+import com.bueras.technova.models.dto.ProductDTO;
 import com.bueras.technova.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +18,8 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAll() {
-        List<Product> products = productService.getAllProducts();
+    public ResponseEntity<List<ProductDTO>> getAll() {
+        List<ProductDTO> products = productService.getAllProducts();
         if (products.isEmpty()) {
             return ResponseEntity.noContent().build(); // 204 No Content
         } else {
@@ -26,26 +28,26 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable Long id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok) // 200 OK
-                .orElse(ResponseEntity.notFound().build()); // 404 Not Found
+    public ResponseEntity<ProductDTO> getById(@PathVariable Long id) {
+        ProductDTO p = productService.getProductById(id);
+        return p != null ? ResponseEntity.ok(p) : ResponseEntity.notFound().build();
+        // 200 OK // 404 Not Found
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product product) {
+    public ResponseEntity<ProductDTO> create(@Valid @RequestBody Product product) {
         try {
-            Product created = productService.createProduct(product);
-            return ResponseEntity.ok(product); // 200 OK
+            ProductDTO created = productService.createProduct(product);
+            return ResponseEntity.ok(created); // 200 OK
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build(); // 400 Bad Request si no se logra crear
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<ProductDTO> update(@PathVariable Long id, @Valid @RequestBody Product product) {
         try {
-            Product updated = productService.updateProduct(id, product);
+            ProductDTO updated = productService.updateProduct(id, product);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build(); // 404 Not Found si no existe
@@ -61,6 +63,15 @@ public class ProductController {
             return ResponseEntity.notFound().build(); // 404 Not Found
 
         }
+    }
+
+    @GetMapping("/by-category/{categoryId}")
+    public ResponseEntity<List<ProductDTO>> getByCategory(@PathVariable Long categoryId) {
+        List<ProductDTO> products = productService.getByCategoryId(categoryId);
+        if (products.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(products);
     }
 
 }

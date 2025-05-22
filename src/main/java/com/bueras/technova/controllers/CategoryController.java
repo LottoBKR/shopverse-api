@@ -1,7 +1,9 @@
 package com.bueras.technova.controllers;
 
 import com.bueras.technova.models.Category;
+import com.bueras.technova.models.dto.CategoryDTO;
 import com.bueras.technova.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +18,8 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAll() {
-        List<Category> products = categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryDTO>> getAll() {
+        List<CategoryDTO> products = categoryService.getAllCategories();
         if (products.isEmpty()) {
             return ResponseEntity.noContent().build(); // 204 No Content
         } else {
@@ -33,7 +35,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@RequestBody Category category) {
+    public ResponseEntity<Category> create(@Valid @RequestBody Category category) {
         try {
             Category created = categoryService.createCategory(category);
             return ResponseEntity.ok(category); // 200 OK
@@ -43,7 +45,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> update(@PathVariable Long id, @RequestBody Category category) {
+    public ResponseEntity<Category> update(@PathVariable Long id,@Valid @RequestBody Category category) {
         try {
             Category updated = categoryService.updateCategory(id, category);
             return ResponseEntity.ok(updated);
@@ -60,6 +62,16 @@ public class CategoryController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build(); // 404 Not Found
 
+        }
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<CategoryDTO> getCategoryDetails(@PathVariable Long id) {
+        try {
+            CategoryDTO dto = categoryService.getCategoryDTOById(id);
+            return ResponseEntity.ok(dto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

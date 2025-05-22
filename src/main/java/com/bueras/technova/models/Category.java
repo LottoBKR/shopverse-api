@@ -1,9 +1,10 @@
 package com.bueras.technova.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 @Entity
 public class Category {
@@ -11,14 +12,20 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
+    @Size(min = 10, message = "La descripción debe tener al menos 10 caracteres")
     private String description;
+
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 
     public Category(){}
 
-    public Category(String name, String description) {
+    public Category(String name, String description, List<Product> products) {
         this.name = name;
         this.description = description;
+        this.products = products;
     }
 
     public Long getId() {
@@ -43,5 +50,13 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }
