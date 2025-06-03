@@ -28,26 +28,25 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getById(@PathVariable Long id) {
-        return categoryService.getCategoryById(id)
-                .map(ResponseEntity::ok) // 200 OK
-                .orElse(ResponseEntity.notFound().build()); // 404 Not Found
+    public ResponseEntity<CategoryDTO> getById(@PathVariable Long id) {
+        CategoryDTO c = categoryService.getCategoryById(id);
+        return c != null ? ResponseEntity.ok(c) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@Valid @RequestBody Category category) {
+    public ResponseEntity<CategoryDTO> create(@Valid @RequestBody Category category) {
         try {
-            Category created = categoryService.createCategory(category);
-            return ResponseEntity.ok(category); // 200 OK
+            CategoryDTO created = categoryService.createCategory(category);
+            return ResponseEntity.ok(created); // 200 OK
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build(); // 400 Bad Request si no se logra crear
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> update(@PathVariable Long id,@Valid @RequestBody Category category) {
+    public ResponseEntity<CategoryDTO> update(@PathVariable Long id,@Valid @RequestBody Category category) {
         try {
-            Category updated = categoryService.updateCategory(id, category);
+            CategoryDTO updated = categoryService.updateCategory(id, category);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build(); // 404 Not Found si no existe

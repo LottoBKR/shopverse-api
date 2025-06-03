@@ -22,21 +22,21 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAll().stream().map(this::toDto).toList();
     }
 
-    public Optional<Category> getCategoryById(Long id) {
-        return categoryRepository.findById(id);
+    public CategoryDTO getCategoryById(Long id) {
+        return toDto(categoryRepository.findById(id).orElse(null));
     }
 
-    public Category createCategory(Category category){
+    public CategoryDTO createCategory(Category category){
         if (category.getName() == null || category.getName().isBlank()) {
             throw new IllegalArgumentException("El nombre de la caregoría no puede estar vacío.");
         }
         if (category.getDescription() == null || category.getDescription().isBlank()) {
             throw new IllegalArgumentException("La descripción de la caregoría no puede estar vacío.");
         }
-        return categoryRepository.save(category);
+        return toDto(categoryRepository.save(category));
     }
 
-    public Category updateCategory(Long id, Category updated) {
+    public CategoryDTO updateCategory(Long id, Category updated) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isEmpty()) {
             throw new IllegalArgumentException("La categoría con ID " + id + " no existe.");
@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = optionalCategory.get();
         category.setName(updated.getName());
         category.setDescription(updated.getDescription());
-        return categoryRepository.save(category);
+        return toDto(categoryRepository.save(category));
     }
 
     public void deleteCategory(Long id) {
